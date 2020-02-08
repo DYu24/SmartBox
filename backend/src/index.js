@@ -1,7 +1,10 @@
 import 'core-js';
+import "regenerator-runtime/runtime";
 
 import dotenv from 'dotenv';
 import { Server } from '@hapi/hapi';
+
+import routes from './routes';
 
 dotenv.config();
 
@@ -20,6 +23,8 @@ server.route({
         return 'smart-box';
     }
 });
+
+server.route(routes);
 
 const init = async () => {
     server.start();
