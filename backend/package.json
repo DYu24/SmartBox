@@ -14,16 +14,21 @@
   "dependencies": {
     "@google-cloud/firestore": "^3.5.0",
     "@hapi/hapi": "^19.1.0",
+    "@hapi/joi": "^17.1.0",
     "core-js": "^3.6.4",
     "dotenv": "^8.2.0",
+    "ngeohash": "^0.6.3",
     "node": "^13.7.0",
+    "node-geocoder": "^3.25.0",
     "nodemon": "^2.0.2",
+    "regenerator-runtime": "^0.13.3",
     "solclientjs": "^10.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.4",
     "@babel/node": "^7.8.4",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.8.4"
   }
 }

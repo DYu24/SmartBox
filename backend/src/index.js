@@ -1,7 +1,12 @@
 import 'core-js';
+import "regenerator-runtime/runtime";
 
 import dotenv from 'dotenv';
 import { Server } from '@hapi/hapi';
+
+import routes from './routes';
+import Solace from './pubsub/solace';
+import solace from 'solclientjs';
 
 dotenv.config();
 
@@ -21,8 +26,12 @@ server.route({
     }
 });
 
+server.route(routes);
+
 const init = async () => {
-    server.start();
+    Solace.initializeConnection(() => { 
+        server.start();
+    });
     console.log('Server running on %s', server.info.uri);
 };
 
