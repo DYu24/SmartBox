@@ -1,6 +1,8 @@
-import { addTrip } from '../database/firestore';
+import { addTrip, findNearbyBox, updatePOBox } from '../database/firestore';
 import Solace from '../pubsub/solace';
 import Joi from '@hapi/joi';
+import NodeGeocoder from 'node-geocoder';
+import geohash from 'ngeohash';
 
 const schema = Joi.object().keys({
     userId: Joi.string(),
@@ -14,6 +16,41 @@ const schema = Joi.object().keys({
     })),
 });
 
+const geocoder = NodeGeocoder({ provider: 'openstreetmap' }); 
+
+const getGeohashRange = (
+    latitude,
+    longitude,
+    distance, // miles
+  ) => {
+    const lat = 0.0144927536231884; // degrees latitude per mile
+    const lon = 0.0181818181818182; // degrees longitude per mile
+  
+    const lowerLat = latitude - lat * distance;
+    const lowerLon = longitude - lon * distance;
+  
+    const upperLat = latitude + lat * distance;
+    const upperLon = longitude + lon * distance;
+  
+    const lower = geohash.encode(lowerLat, lowerLon);
+    const upper = geohash.encode(upperLat, upperLon);
+  
+    return {
+      lower,
+      upper
+    };
+  };
+
+const reservePOBox = async (order) => {
+    order.status = 'Out for delivery';
+    const { latitude, longitude } = await geocoder.geocode(order.address);
+    const range = getGeohashRange(latitude, longitude, 5);
+    const box = await findNearbyBox(range);
+    const updatedBox = { ...box, reserved: true, order };
+    await updatePOBox(updatedBox);
+    return updatedBox;
+}
+
 export default {
     method: 'POST',
     path: '/api/trips',
@@ -22,14 +59,28 @@ export default {
 
         try {
             // For every order, publish a message
-            // const pubsub = Solace.getSession();
-            // for (const order in orders) {
-                
-            // }
+            let failed = [];
+            let succesful = [];
+            let poBoxes = [];
+            for (const order of orders) {
+                try {
+                    const box = await reservePOBox(order);
 
-            const id = await addTrip({ userId, orders });
+                    const pubsub = Solace.getSession();
+                    const message = Solace.createMessage('Delivering', order.phoneNumber);
+                    pubsub.send(message);
 
-            return h.response({ id }).code(200);
+                    poBoxes = [...poBoxes, box];
+                    succesful = [...succesful, order];
+                } catch (error) {
+                    console.log(error);
+                    failed = [...failed, order];
+                }
+            }
+
+            const id = await addTrip({ userId, succesful });
+
+            return h.response({ id, failed, poBoxes }).code(200);
         } catch (error) {
             console.log(error);
             return h.response({ message: error.message }).code(500);

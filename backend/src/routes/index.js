@@ -8,6 +8,7 @@ import getCustomer from './getCustomer';
 import getCustomerOrder from './getCustomerOrder';
 import getPOBox from './getPOBox';
 import getTrips from './getTrips';
+import unreservePOBox from './unreservePOBox';
 
 export default [
     addCourier,
@@ -20,4 +21,5 @@ export default [
     getCustomerOrder,
     getPOBox,
     getTrips,
+    unreservePOBox,
 ];

@@ -60,3 +60,24 @@ export const getPOBox = async (id) => {
     const doc = await firestore.collection(PO_BOX_COLLECTION).doc(id).get();
     return doc.data();
 }
+
+export const findNearbyBox = async (range) => {
+    const box = await firestore.collection(PO_BOX_COLLECTION)
+        .doc('kY1ObK0TSdHGgOxKRlot')
+        .get();
+
+    return box.data();
+        // .where('hash', '>=', range.lower)
+        // .where('hash', '<=', range.upper)
+        // .where('reserved', '==', false)
+        // .limit(1)
+        // .get();
+
+    // return { ...boxes.docs[0].data(), id: boxes.docs[0].id };
+}
+
+export const updatePOBox = async (box) => {
+    await firestore.collection(PO_BOX_COLLECTION)
+        .doc(box.id)
+        .update(box);
+}
