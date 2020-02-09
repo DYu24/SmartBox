@@ -1,12 +1,15 @@
 import paho.mqtt.client as mqtt
 import serial
 import json
+import requests
 
 RESERVE = "PO_BOX_RESERVE_REQUEST_EVENT"
 DELIVERED = "PACKAGE_DELIVERED_EVENT"
 UNREGISTERED = "PO_BOX_UNREGISTERED_EVENT"
 
 PO_BOX_ID = "kY1ObK0TSdHGgOxKRlot"
+
+AMAZON_URL = "https://api.notifymyecho.com/v1/NotifyMe"
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -33,19 +36,25 @@ def on_message(client, userdata, msg):
         print("Received event message for self boxId: " + PO_BOX_ID)
 
         arduino_message = ""
+        alexa_message = {"accessCode":"amzn1.ask.account.AGYROQ3EK4FB7A7TYHZ2I5HEINYQUXIWBW4ZC7GYSMXDLO4E6XOUZZUKGVLSTHLFTHDNKLDHIJAFYNTVDGDK33ILT3XOLEZ7XF7DZIXMAWRLD7HVHEPUGJSFEN5VUIXTAVLGZIASGEUU77QPTHZPFFU3ZAC76CVNS7DK7RWJTIIFY2PSKJXESDPRYAU7V7PCDE22VJS3K4L6HZA"}
 
         if msg.topic == RESERVE:
             print("Reserved PO box for package")
+            alexa_message["notification"] = "Your package is currently out for delivery"
             arduino_message = 1
         elif msg.topic == DELIVERED:
             print("Delivered package to PO box")
+            alexa_message["notification"] = "Your package is available for pickup at your Smart Box"
             arduino_message = 2
         else:
             print("Customer has picked up package")
+            alexa_message["notification"] = "Your package has been picked up from your Smart Box"
             arduino_message = 3
         
         arduinoOut.write(str(arduino_message).encode())
         print("Delivered message to arduino: " + arduino_message)
+
+        requests.post(url = AMAZON_URL, data = json.dumps(alexa_message)) 
 
 client = mqtt.Client()
 client.on_connect = on_connect
