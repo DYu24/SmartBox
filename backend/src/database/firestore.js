@@ -64,7 +64,7 @@ export const getPOBox = async (id) => {
 
 export const findNearbyBox = async (range) => {
     const box = await firestore.collection(PO_BOX_COLLECTION)
-        .doc('kY1ObK0TSdHGgOxKRlot')
+        .doc('232389058123982830')
         .get();
 
     return { ...box.data(), id: box.id };

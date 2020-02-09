@@ -7,9 +7,7 @@ import { PO_BOX_RESERVE_REQUEST_EVENT } from '../pubsub/events';
 
 const schema = Joi.object().keys({
     userId: Joi.string(),
-    orderIds: Joi.array().items(Joi.object().keys({
-        id: Joi.string(),
-    })),
+    orderIds: Joi.array().items(Joi.string()),
 });
 
 const geocoder = NodeGeocoder({ provider: 'openstreetmap' }); 
@@ -58,7 +56,8 @@ export default {
             let failed = [];
             let succesful = [];
             let poBoxes = [];
-            for (const orderId of orders) {
+            console.log(orderIds);
+            for (const orderId of orderIds) {
                 try {
                     const order = await getCustomerOrder(orderId);
                     const box = await reservePOBox(order);

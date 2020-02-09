@@ -3,7 +3,7 @@ import QrReader from 'react-qr-reader';
 import { Button } from 'semantic-ui-react';
 import { addTrip, lockBox, unlockBox } from '../../api';
 
-const QRScanner = (isCustomer, items) => {
+const QRScanner = ({isCustomer, orders}) => {
     const [result, setResult] = useState();
     const [tripItems, setTripItems] = useState([]);
 
@@ -30,6 +30,7 @@ const QRScanner = (isCustomer, items) => {
         if (user != null) {
             try {
                 await unlockBox(user.phoneNumber, result);
+                setResult(undefined);
             } catch (error) {
                 console.log('Unable to unlock PO box.');
             }
@@ -38,8 +39,8 @@ const QRScanner = (isCustomer, items) => {
         }
     };
 
-    const addItemToTrip = (itemId) => {
-        setTripItems([...tripItems, itemId]);
+    const addItemToTrip = (e) => {
+        setTripItems([...tripItems, result]);
     };
 
     const startDelivery = async () => {
@@ -64,7 +65,7 @@ const QRScanner = (isCustomer, items) => {
                 </Button>
             );
         } else {
-            if (items) {
+            if (orders) {
                 return (
                     <>
                         <Button
@@ -75,16 +76,17 @@ const QRScanner = (isCustomer, items) => {
                         >
                             Scan Item
                         </Button>
-                        {tripItems.length && (
+                        {tripItems.length > 0 ? (
                             <Button
                                 color='instagram'
                                 fluid
                                 size='big'
+                                style={{ marginTop: '0.5em' }}
                                 onClick={startDelivery}
                             >
                                 Start Delivery
                             </Button>
-                        )}
+                        ) : <></>}
                     </>
                 );
             }

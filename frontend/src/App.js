@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 
 import Login from './components/login/Login';
-import MapView from './components/mapview/MapView';
-import QRScanner from './components/qrScanner/QRScanner';
+
+import CustomerView from './views/CustomerView';
+import CourierView from './views/CourierView';
 
 function App() {
     const [signedIn, setSignedIn] = useState(false);
@@ -20,8 +21,8 @@ function App() {
     return (
         <div className="App">
             {!signedIn 
-                ? <Login />
-                : isCustomer ? <QRScanner /> : <MapView />
+                ? <CustomerView />
+                : isCustomer ? <CustomerView /> : <CourierView />
             }
         </div>
     );
