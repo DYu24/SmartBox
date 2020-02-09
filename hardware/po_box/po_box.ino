@@ -100,6 +100,37 @@ void loop(){
       }
   }
 
+  if (startCloseDown) {
+    closeDownCounter ++;
+    if (closeDownCounter > 2800) {
+      startCloseDown = false;
+      closeDownCounter = 0;
+
+      int closeDelay = 350;
+      
+      setColorOfStrip(150, 0, 150);
+      delay(closeDelay);
+      setColorOfStrip(221, 150, 242);
+      delay(closeDelay);
+      setColorOfStrip(150, 0, 150);
+      delay(closeDelay);
+      setColorOfStrip(221, 150, 242);
+      delay(closeDelay);
+      setColorOfStrip(150, 0, 150);
+      delay(closeDelay);
+      setColorOfStrip(221, 150, 242);
+      delay(closeDelay);
+      setColorOfStrip(150, 0, 150);
+      delay(closeDelay);
+      setColorOfStrip(221, 150, 242);
+      delay(closeDelay);
+      
+      closeBox();
+
+      setColorOfStrip(0, 150, 0);
+    }
+  }
+
   if (counter > 600) {
     flag.detach();
     counter = 0;
