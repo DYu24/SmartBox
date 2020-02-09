@@ -21,7 +21,7 @@ function App() {
     return (
         <div className="App">
             {!signedIn 
-                ? <CustomerView />
+                ? <Login />
                 : isCustomer ? <CustomerView /> : <CourierView />
             }
         </div>

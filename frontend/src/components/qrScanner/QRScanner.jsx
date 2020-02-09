@@ -47,7 +47,8 @@ const QRScanner = ({isCustomer, orders}) => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user != null && !user.customer) {
             try {
-                await addTrip(user.id, tripItems)
+                const { poBoxes } = await addTrip(user.id, tripItems);
+                localStorage.setItem('boxes', JSON.stringify(poBoxes));
                 setTripItems([]);
             } catch (error) {
                 console.log('Unable to start delivery.');
