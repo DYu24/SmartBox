@@ -1,39 +1,59 @@
 import React, { useState } from 'react';
-import {
-    Button,
-    Form,
-    Grid,
-    Header, 
-    Segment,
-} from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
 import { login } from '../../api';
 
-export const Login = () => {
-    const [phoneNumber, setPhoneNumber] = useState('+1');
-    const loginBtnDisabled = phoneNumber.length <= 2;
-    const loginBtnColor = loginBtnDisabled ? '#416d96' : '#004A8E';
+const Login = () => {
+    const [phoneNumber, setPhoneNumber] = useState('');
 
-    const login = async (event) => {
+    const onTextChange = (event) => {
+        setPhoneNumber(event.target.value);
+    };
+
+    const onSubmit = async (event) => {
         try {
-            const user = await login(phoneNumber.replace('+1', ''));
+            const user = await login(phoneNumber);
             localStorage.setItem('user', JSON.stringify(user));
         } catch (error) {
             console.log(error);
+        } finally {
+            window.location.reload();
         }
-    }
+    };
 
     return (
-        <Grid textAlign='center' style= {{ height: '100vh' }} verticalAlign='middle'>
-            <Grid.Column style={{ width: '50vw' }}>
+        <Grid
+            textAlign='center'
+            style={{ height: '100vh' }}
+            verticalAlign='middle'
+        >
+            <Grid.Column style={{ width: '80vw' }}>
                 <Header as='h2' color='teal' textAlign='center'>
-                    Log-In With Your Phone Number
+                    Smart-Box Delivery
                 </Header>
                 <Form size='large'>
                     <Segment stacked>
-                        <Form.Input></Form.Input>
+                        <Form.Input
+                            fluid
+                            icon='phone'
+                            iconPosition='left'
+                            type='tel'
+                            placeholder='Phone Number'
+                            onChange={onTextChange}
+                        />
+                        <Button
+                            disabled={phoneNumber.length <= 2}
+                            color='teal'
+                            fluid
+                            size='large'
+                            onClick={onSubmit}
+                        >
+                            Login
+                        </Button>
                     </Segment>
                 </Form>
             </Grid.Column>
         </Grid>
-    )
-}
+    );
+};
+
+export default Login;
