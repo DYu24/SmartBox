@@ -40,11 +40,11 @@ const CourierView = () => {
                     </Menu.Menu>
                 </Container>
             </Menu>
-            <Container>
+            <div style={{ height: '100vh', width: '100vw'}}>
                 {activeItem === 'map' && <MapView />}
                 {activeItem === 'box' && <QRScanner />}
                 {activeItem === 'orders' && <QRScanner orders />}
-            </Container>
+            </div>
         </div>
     )
 }
