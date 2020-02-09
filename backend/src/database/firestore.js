@@ -7,6 +7,7 @@ const COURIER_COLLECTION = 'couriers';
 const CUSTOMER_COLLECTION = 'customers';
 const CUSTOMER_ORDER_COLLECTION = 'orders';
 const TRIP_COLLECTION = 'trips';
+const USER_COLLECTION = 'users';
 
 export const addCustomerOrder = async (order) => {
     const result = await firestore.collection(CUSTOMER_ORDER_COLLECTION).add(order);
@@ -86,4 +87,12 @@ export const updateOrder = async (order) => {
     await firestore.collection(CUSTOMER_ORDER_COLLECTION)
         .doc(order.id)
         .update(order);
+}
+
+export const login = async (number) => {
+    const user = await firestore.collection(USER_COLLECTION)
+        .where('phoneNumber', '==', number)
+        .get();
+
+    return user.docs[0].data();
 }
