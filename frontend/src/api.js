@@ -14,3 +14,26 @@ export const login = async (phoneNumber) => {
 
     return response.data;
 };
+
+export const unlockBox = async (phoneNumber, boxId) => {
+    const response = await client.post('/api/unreserve', {
+        phoneNumber,
+        boxId,
+    });
+
+    return response.data;
+}
+
+export const lockBox = async (boxId) => {
+    const response = await client.post(`/api/deliver/${boxId}`);
+    return response.data;
+}
+
+export const addTrip = async (userId, orders) => {
+    const response = await client.post('/api/trips', {
+        userId,
+        orderIds: orders,
+    });
+
+    return response.data;
+}

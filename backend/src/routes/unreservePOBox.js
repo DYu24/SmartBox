@@ -6,17 +6,16 @@ import { PO_BOX_UNREGISTERED_EVENT } from '../pubsub/events';
 
 const schema = Joi.object().keys({
     phoneNumber: Joi.string(),
+    boxId: Joi.string(),
 });
 
 export default {
-    method: 'PUT',
-    path: '/api/boxes/{id}',
+    method: 'POST',
+    path: '/api/unreserve',
     handler: async (request, h) => {
         try {
-            const { id } = request.params;
-            const { phoneNumber } = await schema.validateAsync(request.payload);
-
-            const box = await getPOBox(id);
+            const { boxId, phoneNumber } = await schema.validateAsync(request.payload);
+            const box = await getPOBox(boxId);
             const { order, reserved, ...restOfBox } = box;
 
             // Cannot unreserve a box that is not reserved
@@ -35,10 +34,10 @@ export default {
             }
 
             // Publish message for PO box to unlock itself
-            messagingClient.publish(PO_BOX_UNREGISTERED_EVENT, { id });
+            messagingClient.publish(PO_BOX_UNREGISTERED_EVENT, JSON.stringify({ boxId }));
 
             await updatePOBox(updatedBox);
-            return h.response({ message: `Successfully freed PO box with id=<${id}>`}).code(200);
+            return h.response({ message: `Successfully freed PO box with id=<${boxId}>`}).code(200);
         } catch (error) {
             console.log(error);
             return h.response({ message: error.message }).code(500);

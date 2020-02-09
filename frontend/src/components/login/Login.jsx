@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react';
+import { Button, Form, Grid, Header, Segment, Icon } from 'semantic-ui-react';
 import { login } from '../../api';
 
 const Login = () => {
@@ -27,7 +27,7 @@ const Login = () => {
             verticalAlign='middle'
         >
             <Grid.Column style={{ width: '80vw' }}>
-                <Header as='h2' color='teal' textAlign='center'>
+                <Header as='h2' style={{ textAlign: 'left', color: '#004A8E' }} textAlign='center'>
                     Smart-Box Delivery
                 </Header>
                 <Form size='large'>
@@ -42,7 +42,7 @@ const Login = () => {
                         />
                         <Button
                             disabled={phoneNumber.length <= 2}
-                            color='teal'
+                            style={{ color: 'white', backgroundColor: '#004A8E' }}
                             fluid
                             size='large'
                             onClick={onSubmit}
