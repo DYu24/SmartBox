@@ -66,7 +66,7 @@ export default {
                 try {
                     const box = await reservePOBox(order);
 
-                    messagingClient.publish(order.phoneNumber, 'Your order is out for delivery');
+                    messagingClient.publish(order.phoneNumber, `Order with id=<${order.id}> out for delivery`);
 
                     poBoxes = [...poBoxes, box];
                     succesful = [...succesful, order];

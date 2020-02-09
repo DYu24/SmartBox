@@ -2,6 +2,7 @@
 import Joi from '@hapi/joi';
 import { getPOBox, updatePOBox } from '../database/firestore';
 import messagingClient from '../pubsub/Messaging';
+import { PO_BOX_UNREGISTERED_EVENT } from '../pubsub/events';
 
 const schema = Joi.object().keys({
     phoneNumber: Joi.string(),
@@ -34,7 +35,7 @@ export default {
             }
 
             // Publish message for PO box to unlock itself
-            messagingClient.publish('unregisterEvent', { id });
+            messagingClient.publish(PO_BOX_UNREGISTERED_EVENT, { id });
 
             await updatePOBox(updatedBox);
             return h.response({ message: `Successfully freed PO box with id=<${id}>`}).code(200);

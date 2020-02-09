@@ -1,9 +1,10 @@
 import messagingClient from '../pubsub/Messaging';
 import { updateOrder } from '../database/firestore';
+import { PACKAGE_DELIVERED_EVENT } from '../pubsub/events';
 
 export default {
     method: 'POST',
-    path: '/api/deposit/{boxId}',
+    path: '/api/deliver/{boxId}',
     handler: async (request, h) => {
         try {
             // Update order status to delivered
@@ -13,8 +14,8 @@ export default {
             await updateOrder(order);
     
             // Publish delivery event for corresponding box to close
-            messagingClient.publish('packageDeliveredEvent', { boxId });
-            
+            messagingClient.publish(PACKAGE_DELIVERED_EVENT, { boxId });
+
             return h.response({ message: `Order with id=<${order.id}> was successfully delivered` }).code(200);
         } catch(error) {
             console.log(error);
