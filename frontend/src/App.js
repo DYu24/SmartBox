@@ -3,6 +3,7 @@ import './App.css';
 
 import Login from './components/login/Login';
 import MapView from './components/mapview/MapView';
+import QRScanner from './components/qrScanner/QRScanner';
 
 function App() {
     const [signedIn, setSignedIn] = useState(false);
@@ -20,7 +21,7 @@ function App() {
         <div className="App">
             {!signedIn 
                 ? <Login />
-                : isCustomer ? <h1>Hello customer!</h1> : <MapView />
+                : isCustomer ? <QRScanner /> : <MapView />
             }
         </div>
     );

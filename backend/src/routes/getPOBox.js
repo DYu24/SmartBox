@@ -3,7 +3,7 @@ import { getPOBox } from '../database/firestore';
 export default {
     method: 'GET',
     path: '/api/boxes/{id}',
-    handler: async (handler, h) => {
+    handler: async (request, h) => {
         const { id } = request.params;
 
         try {

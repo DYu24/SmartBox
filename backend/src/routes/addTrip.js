@@ -1,18 +1,14 @@
-import { addTrip, findNearbyBox, updatePOBox } from '../database/firestore';
+import { addTrip, findNearbyBox, updatePOBox, getCustomerOrder } from '../database/firestore';
 import Joi from '@hapi/joi';
 import NodeGeocoder from 'node-geocoder';
 import geohash from 'ngeohash';
 import messagingClient from '../pubsub/Messaging';
+import { PO_BOX_RESERVE_REQUEST_EVENT } from '../pubsub/events';
 
 const schema = Joi.object().keys({
     userId: Joi.string(),
-    orders: Joi.array().items(Joi.object().keys({
+    orderIds: Joi.array().items(Joi.object().keys({
         id: Joi.string(),
-        to: Joi.string(),
-        from: Joi.string(),
-        phoneNumber: Joi.string(),
-        address: Joi.string(),
-        status: Joi.string(),
     })),
 });
 
@@ -42,7 +38,7 @@ const getGeohashRange = (
   };
 
 const reservePOBox = async (order) => {
-    order.status = 'Out for delivery';
+    order.status = 'OUT FOR DELIVERY';
     const { latitude, longitude } = await geocoder.geocode(order.address);
     const range = getGeohashRange(latitude, longitude, 5);
     const box = await findNearbyBox(range);
@@ -55,18 +51,19 @@ export default {
     method: 'POST',
     path: '/api/trips',
     handler: async (request, h) => {
-        const { userId, orders } = await schema.validateAsync(request.payload);
+        const { userId, orderIds } = await schema.validateAsync(request.payload);
 
         try {
             // For every order, publish a message
             let failed = [];
             let succesful = [];
             let poBoxes = [];
-            for (const order of orders) {
+            for (const orderId of orders) {
                 try {
+                    const order = await getCustomerOrder(orderId);
                     const box = await reservePOBox(order);
-
                     messagingClient.publish(order.phoneNumber, `Order with id=<${order.id}> out for delivery`);
+                    messagingClient.publish(PO_BOX_RESERVE_REQUEST_EVENT, JSON.stringify({ boxId: box.id }));
 
                     poBoxes = [...poBoxes, box];
                     succesful = [...succesful, order];

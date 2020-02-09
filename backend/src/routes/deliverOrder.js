@@ -1,5 +1,5 @@
 import messagingClient from '../pubsub/Messaging';
-import { updateOrder } from '../database/firestore';
+import { updateOrder, getPOBox } from '../database/firestore';
 import { PACKAGE_DELIVERED_EVENT } from '../pubsub/events';
 
 export default {
@@ -8,13 +8,14 @@ export default {
     handler: async (request, h) => {
         try {
             // Update order status to delivered
-            const box = await getPOBox(id);
+            const { boxId } = request.params; 
+            const box = await getPOBox(boxId);
             let { order } = box;
             order.status = 'DELIVERED';
             await updateOrder(order);
     
             // Publish delivery event for corresponding box to close
-            messagingClient.publish(PACKAGE_DELIVERED_EVENT, { boxId });
+            messagingClient.publish(PACKAGE_DELIVERED_EVENT, JSON.stringify({ boxId }));
 
             return h.response({ message: `Order with id=<${order.id}> was successfully delivered` }).code(200);
         } catch(error) {

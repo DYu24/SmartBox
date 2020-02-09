@@ -67,7 +67,7 @@ export const findNearbyBox = async (range) => {
         .doc('kY1ObK0TSdHGgOxKRlot')
         .get();
 
-    return box.data();
+    return { ...box.data(), id: box.id };
         // .where('hash', '>=', range.lower)
         // .where('hash', '<=', range.upper)
         // .where('reserved', '==', false)
@@ -94,5 +94,5 @@ export const login = async (number) => {
         .where('phoneNumber', '==', number)
         .get();
 
-    return user.docs[0].data();
+    return { ...user.docs[0].data(), id: user.docs[0].id };
 }
