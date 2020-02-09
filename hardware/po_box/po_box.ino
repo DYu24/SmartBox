@@ -27,6 +27,11 @@ int sensorState = 0, lastState=0;         // variable for reading the pushbutton
 int flagPosition;
 int counter = 0;
 Servo flag;
+
+char message;
+
+boolean startCloseDown = false;
+int closeDownCounter = 0;
  
 void setup() {
   // initialize the LED pin as an output:
@@ -42,17 +47,39 @@ void setup() {
   flagPosition = 6;
 
   closeBox();
-  openBox();
 
+  // GREEN for Available Box
   setColorOfStrip(0,150,0);
-  delay(1000);
-  setColorOfStrip(150,0,0);
-  delay(1000);
-  setColorOfStrip(0,0,150);
 }
  
 void loop(){
   sensorState = digitalRead(SENSORPIN);
+
+  if (Serial.available())
+  {
+    message = Serial.read();
+
+    switch(message) {
+      case '1':
+        // RED, RESERVED BOX
+        setColorOfStrip(230, 0, 0);
+        openBox();
+        break;
+      case '2':
+        // ORANGE, DELIVERED PACKAGE
+        setColorOfStrip(255,191,0);
+        closeBox();
+        break;
+      case '3':
+        // GREEN, PICKING UP PACKAGE
+        setColorOfStrip(0, 230, 0);
+        openBox();
+        startCloseDown = true;
+        break;
+      default:
+        break;
+    }
+  }
   
   if (sensorState == LOW) {
       if (flagPosition != FLAG_UP) {
@@ -101,9 +128,6 @@ void openBox() {
   right_motor.write(RIGHT_MOTOR_OPEN);
   left_motor.write(LEFT_MOTOR_OPEN);
   delay(1500);
-
-  right_motor.detach();
-  left_motor.detach();
 }
 
 void setColorOfStrip(int red, int green, int blue) {
