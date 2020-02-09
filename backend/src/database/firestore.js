@@ -81,3 +81,9 @@ export const updatePOBox = async (box) => {
         .doc(box.id)
         .update(box);
 }
+
+export const updateOrder = async (order) => {
+    await firestore.collection(CUSTOMER_ORDER_COLLECTION)
+        .doc(order.id)
+        .update(order);
+}

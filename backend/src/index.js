@@ -5,8 +5,7 @@ import dotenv from 'dotenv';
 import { Server } from '@hapi/hapi';
 
 import routes from './routes';
-import Solace from './pubsub/solace';
-import solace from 'solclientjs';
+import messagingClient from './pubsub/Messaging';
 
 dotenv.config();
 
@@ -29,15 +28,18 @@ server.route({
 server.route(routes);
 
 const init = async () => {
-    Solace.initializeConnection(() => { 
+    try {
+        await messagingClient.connectWithPromise();
         server.start();
-    });
-    console.log('Server running on %s', server.info.uri);
-};
+        console.log('server running')
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+init()
 
 process.on('unhandledRejection', (err) => {
     console.log(err);
     process.exit(1);
 });
-
-init();

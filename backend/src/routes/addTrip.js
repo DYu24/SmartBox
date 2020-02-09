@@ -1,8 +1,8 @@
 import { addTrip, findNearbyBox, updatePOBox } from '../database/firestore';
-import Solace from '../pubsub/solace';
 import Joi from '@hapi/joi';
 import NodeGeocoder from 'node-geocoder';
 import geohash from 'ngeohash';
+import messagingClient from '../pubsub/Messaging';
 
 const schema = Joi.object().keys({
     userId: Joi.string(),
@@ -66,9 +66,7 @@ export default {
                 try {
                     const box = await reservePOBox(order);
 
-                    const pubsub = Solace.getSession();
-                    const message = Solace.createMessage('Delivering', order.phoneNumber);
-                    pubsub.send(message);
+                    messagingClient.publish(order.phoneNumber, 'Your order is out for delivery');
 
                     poBoxes = [...poBoxes, box];
                     succesful = [...succesful, order];
