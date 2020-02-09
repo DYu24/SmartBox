@@ -10,6 +10,7 @@ import getPOBox from './getPOBox';
 import getTrips from './getTrips';
 import unreservePOBox from './unreservePOBox';
 import deliverOrder from './deliverOrder';
+import login from './login';
 
 export default [
     addCourier,
@@ -24,4 +25,5 @@ export default [
     getTrips,
     unreservePOBox,
     deliverOrder,
+    login,
 ];
