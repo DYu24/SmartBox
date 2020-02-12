@@ -1,4 +1,6 @@
-# SmartBox
+<p align="center"><img src="smart-box-logo.png" width="500"></p>
+
+
 
 ## What is SmartBox?
 
